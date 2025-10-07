@@ -1,11 +1,12 @@
 import Constants from "expo-constants";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Eye } from 'lucide-react-native';
-import { useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Platform, Pressable, Text, TextInput, View } from "react-native";
 import { useAuth } from "../../../context/AuthContext";
+
 
 export default function AddCategory() {
   const { token } = useAuth();
@@ -13,6 +14,74 @@ export default function AddCategory() {
   const [image, setImage] = useState<any>(null);
   const [file, setFile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [nameStatus, setNameStatus] = useState<null | "checking" | "exists" | "available">(null);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [nameTouched, setNameTouched] = useState(false);
+  const isNameValid = name.trim().length >= 2 && nameStatus !== "exists";
+
+  const allowedImageTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+  ];
+
+  const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif","application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+
+
+
+
+  useEffect(() => {
+    const trimmed = name.trim();
+
+    if (trimmed.length === 0) {
+      setNameStatus(null);
+      setNameError("⚠️ Category name is required");
+      return;
+    }
+
+
+
+    const checkName = async () => {
+      setNameStatus("checking");
+      setNameError(null);
+
+      try {
+        const response = await fetch(`${Constants.expoConfig?.extra?.LARAVEL_API_URL}/admin/cat/check`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ name: trimmed }),
+        });
+
+        let data = null;
+        try {
+          const text = await response.text();
+          data = text ? JSON.parse(text) : null;
+        } catch (e) {
+          console.error("❌ Failed to parse JSON:", e);
+        }
+
+        if (data?.exists) {
+          setNameStatus("exists");
+          setNameError("❌ Name already exists");
+        } else {
+          setNameStatus("available");
+          setNameError(null);
+        }
+      } catch (error) {
+        console.error("Name check failed:", error);
+        setNameStatus(null);
+        setNameError("⚠️ Unable to check name");
+      }
+    };
+
+    checkName();
+  }, [name]);
 
   const pickImage = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -44,10 +113,34 @@ export default function AddCategory() {
     }
   };
 
+  const normalizedImageType = image?.mimeType?.toLowerCase();
+  if (image && !allowedImageTypes.includes(normalizedImageType)) {
+    Alert.alert("❌ Invalid Image", "Only JPG, JPEG, PNG, WEBP, and GIF are allowed.");
+    setLoading(false);
+    return;
+  }
 
+  if (file && !allowedFileTypes.includes(file.type)) {
+    Alert.alert("❌ Invalid File", "Only Images, text, PDF and Word documents are allowed.");
+    setLoading(false);
+    return;
+  }
   const handleSubmit = async () => {
+
     if (!name.trim()) {
-      Alert.alert("Validation", "Name is required");
+        setNameStatus(null);
+        return;
+    }
+
+    if (image && image.size > 20 * 1024 * 1024) {
+      Alert.alert("❌ Image Too Large", "Maximum allowed size is 20 MB.");
+      setLoading(false);
+      return;
+    }
+
+    if (file && file.size > 40 * 1024 * 1024) {
+      Alert.alert("❌ File Too Large", "Maximum allowed size is 40 MB.");
+      setLoading(false);
       return;
     }
 
@@ -56,21 +149,38 @@ export default function AddCategory() {
     formData.append("name", name);
 
     if (image) {
-      formData.append("img", {
-        uri: image.uri,
-        name: image.fileName || "image.jpg",
-        type: image.mimeType || "image/jpeg",
-      } as any);
+      if (Platform.OS === "web") {
+        // Web: use File object
+        const response = await fetch(image.uri);
+        const blob = await response.blob();
+        formData.append("img", new File([blob], image.fileName || "image.jpg", {
+          type: image.mimeType || "image/jpeg",
+        }));
+      } else {
+        // Mobile: use uri-based object
+        formData.append("img", {
+          uri: image.uri,
+          name: image.fileName || "image.jpg",
+          type: image.mimeType || "image/jpeg",
+        } as any);
+      }
     }
 
-    if (file) {
-      formData.append("filer", {
-        uri: file.uri, // ✅ use the URI we stored earlier
-        name: file.name,
-        type: file.type || "application/octet-stream",
-      } as any);
 
-      console.log("✅ Appended file:", file);
+    if (file) {
+      if (Platform.OS === "web") {
+        const response = await fetch(file.uri);
+        const blob = await response.blob();
+        formData.append("filer", new File([blob], file.name, {
+          type: file.type || "application/octet-stream",
+        }));
+      } else {
+        formData.append("filer", {
+          uri: file.uri,
+          name: file.name,
+          type: file.type || "application/octet-stream",
+        } as any);
+      }
     }
 
 
@@ -91,16 +201,26 @@ export default function AddCategory() {
         
       );
       console.log("📦 FormData:", formData);
-      const data = await response.json();
+      
+      let data = null;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : null;
+      } catch (e) {
+        console.error("❌ Failed to parse JSON:", e);
+      }
 
       if (response.ok) {
-        Alert.alert("✅ Success", "Category added");
         setName("");
         setImage(null);
         setFile(null);
+        setNameTouched(false);
+        router.replace("/(admin)/cat");
       } else {
-        Alert.alert("❌ Error", data.message || "Failed to add category");
+        const errorMessage = data?.message || "❌ Failed to add category. Make sure your files are valid.";
+        Alert.alert("❌ Error", errorMessage);
       }
+
     } catch (error: any) {
       Alert.alert("🚨 Network Error", error.message || "Unable to connect");
     } finally {
@@ -128,9 +248,21 @@ export default function AddCategory() {
       <TextInput
         placeholder="Category Name"
         value={name}
-        onChangeText={setName}
+        onChangeText={(text) => {
+          setNameTouched(true);
+          setName(text);
+        }}
+
         className="border border-gray-400 rounded-md px-3 py-2 mt-4 mb-4 bg-white"
       />
+
+
+      {nameTouched && nameError && (
+        <Text className="text-red-600 mb-2">{nameError}</Text>
+      )}
+
+
+
 
       <Pressable onPress={pickImage} className="bg-blue-500 px-4 py-2 rounded-md mb-3">
         <Text className="text-white text-center font-medium">
@@ -146,13 +278,15 @@ export default function AddCategory() {
 
       <Pressable
         onPress={handleSubmit}
-        disabled={loading}
-        className="bg-black px-4 py-2 rounded-md"
+        disabled={loading || !isNameValid}
+        className={`px-4 py-2 rounded-md ${loading || !isNameValid ? "bg-gray-400" : "bg-black"}`}
       >
         <Text className="text-white text-center font-medium">
           {loading ? "Submitting..." : "🚀 Submit"}
         </Text>
       </Pressable>
+
+
     </View>
   );
 }
