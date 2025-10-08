@@ -1,15 +1,9 @@
-import { Link, Stack, useRouter } from "expo-router";
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Link, Stack } from "expo-router";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth, useAuthGuard } from "../../context/AuthContext";
 
-
-
-
 const Banner = () => (
-  <View
-    className="w-full h-[40px] items-center justify-center overflow-hidden mt-10 mb-4"
-    style={styles.banner}
-  >
+  <View className="w-full h-[40px] items-center justify-center overflow-hidden mt-10 mb-4" style={styles.banner}>
     <Image
       source={require('../../assets/images/main5.jpg')}
       className="max-w-full max-h-full"
@@ -19,15 +13,13 @@ const Banner = () => (
 );
 
 export default function AdminLayout() {
-  const { user,  loading } = useAuthGuard();
+  const { user, loading } = useAuthGuard();
+  const { logout } = useAuth();
 
-    const router = useRouter();
-    const {logout } = useAuth();
- 
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#000" />
+        <Text>Loading...</Text>
       </View>
     );
   }
@@ -35,44 +27,32 @@ export default function AdminLayout() {
   if (!user) return null;
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View className="flex-1 px-4 py-6">
+    <View className="flex-1">
+      {/* Scrollable header zone */}
+<View style={{ height: 200, paddingHorizontal: 16, paddingTop: 24 }}>
+  <Banner />
 
-        <Banner />
-        {/* Navigation Section */}
+  <Pressable
+    className="bg-red-600 px-4 py-2 rounded-md items-center justify-center w-[100] self-center"
+    onPress={logout}
+  >
+    <Text className="text-white font-medium">Logout</Text>
+  </Pressable>
 
-          <Pressable
-            className="bg-red-600 px-4 py-2 rounded-md items-center justify-center w-[100] self-center"
-            onPress={() => {
-              logout();
-            }}
-          >
-          <Text className="text-white font-medium">Logout</Text>
-        </Pressable>
+  <View className="flex-row flex-wrap gap-x-1 gap-y-4 mb-6 mt-4">
+    <Link href="/(admin)/cat" className="text-blue-600 font-medium">Categories</Link>
+    <Link href="/(admin)/cat" className="text-blue-600 font-medium">| SubCategories</Link>
+  </View>
+</View>
 
-        <View className="flex-row flex-wrap gap-x-1 gap-y-4 mb-6 mt-4">
-          
 
-          <Link href="/(admin)/cat" className="text-blue-600 font-medium">
-            Categories
-          </Link>
-
-          <Link href="/(admin)/cat" className="text-blue-600 font-medium">
-            |  SubCategories
-          </Link>
-
-    
-
-         
-        </View>
-
-        {/* Stack Navigator */}
+      {/* Routed screen zone */}
+      <View className="flex-1">
         <Stack screenOptions={{ headerShown: false }} />
       </View>
-    </ScrollView>
+    </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   banner: {
