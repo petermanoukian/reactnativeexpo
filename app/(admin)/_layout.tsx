@@ -1,4 +1,4 @@
-import { Link, Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth, useAuthGuard } from "../../context/AuthContext";
 
@@ -15,6 +15,7 @@ const Banner = () => (
 export default function AdminLayout() {
   const { user, loading } = useAuthGuard();
   const { logout } = useAuth();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -29,21 +30,26 @@ export default function AdminLayout() {
   return (
     <View className="flex-1">
       {/* Scrollable header zone */}
-<View style={{ height: 200, paddingHorizontal: 16, paddingTop: 24 }}>
-  <Banner />
+      <View style={{ height: 190, paddingHorizontal: 16, paddingTop: 4 }}>
+        <Banner />
 
-  <Pressable
-    className="bg-red-600 px-4 py-2 rounded-md items-center justify-center w-[100] self-center"
-    onPress={logout}
-  >
-    <Text className="text-white font-medium">Logout</Text>
-  </Pressable>
+        <Pressable
+          className="bg-red-600 px-4 py-2 rounded-md items-center justify-center w-[100] self-center"
+          onPress={logout}
+        >
+          <Text className="text-white font-medium">Logout</Text>
+        </Pressable>
 
-  <View className="flex-row flex-wrap gap-x-1 gap-y-4 mb-6 mt-4">
-    <Link href="/(admin)/cat" className="text-blue-600 font-medium">Categories</Link>
-    <Link href="/(admin)/cat" className="text-blue-600 font-medium">| SubCategories</Link>
-  </View>
-</View>
+        <View className="flex-row flex-wrap gap-x-1 gap-y-4 mb-6 mt-4">
+          <Pressable onPress={() => router.replace("/(admin)/cat")}>
+            <Text className="text-blue-600 font-medium">Categories</Text>
+          </Pressable>
+          <Text className="text-blue-600 font-medium">|</Text>
+          <Pressable onPress={() => router.replace("/(admin)/subcat")}>
+            <Text className="text-blue-600 font-medium">SubCategories</Text>
+          </Pressable>
+        </View>
+      </View>
 
 
       {/* Routed screen zone */}
