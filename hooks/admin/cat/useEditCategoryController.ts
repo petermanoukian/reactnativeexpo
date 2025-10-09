@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import Constants from "expo-constants";
+import { apiUrl, webUrl } from "@/src/config/env";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
@@ -17,8 +17,11 @@ export function useEditCategoryController() {
   const [nameStatus, setNameStatus] = useState<null | "checking" | "exists" | "available">(null);
   const [nameError, setNameError] = useState<string | null>(null);
   const [nameTouched, setNameTouched] = useState(false);
-
   const isNameValid = name.trim().length >= 2 && nameStatus !== "exists";
+  const [existingImagePath, setExistingImagePath] = useState<string | null>(null);
+  const [existingFileName, setExistingFileName] = useState<string | null>(null);
+
+
 
   const allowedImageTypes = [
     "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"
@@ -35,7 +38,7 @@ export function useEditCategoryController() {
   useEffect(() => {
     const loadCategory = async () => {
       try {
-        const response = await fetch(`${Constants.expoConfig?.extra?.LARAVEL_API_URL}/admin/cat/edit/${id}`, {
+        const response = await fetch(`${apiUrl}/admin/cat/edit/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
@@ -46,6 +49,9 @@ export function useEditCategoryController() {
         const data = text ? JSON.parse(text) : null;
 
         if (data?.name) setName(data.name);
+        if (data?.img2) setExistingImagePath(data.img2);
+        if (data?.filer) setExistingFileName(data.filer);
+
       } catch (error) {
         Alert.alert("❌ Error", "Failed to load category");
       }
@@ -67,7 +73,7 @@ export function useEditCategoryController() {
       setNameStatus("checking");
       setNameError(null);
       try {
-        const response = await fetch(`${Constants.expoConfig?.extra?.LARAVEL_API_URL}/admin/cat/checkedit`, {
+        const response = await fetch(`${apiUrl}/admin/cat/checkedit`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -198,8 +204,8 @@ export function useEditCategoryController() {
     }
 
     try {
-      const response = await fetch(`${Constants.expoConfig?.extra?.LARAVEL_API_URL}/admin/cat/update/${id}`, {
-        method: "POST", // or PUT if Laravel accepts it
+      const response = await fetch(`${apiUrl}/admin/cat/update/${id}`, {
+        method: "POST", 
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -240,5 +246,8 @@ export function useEditCategoryController() {
     pickImage,
     pickFile,
     handleSubmit,
+    existingImagePath,
+    existingFileName,
+    webUrl,
   };
 }

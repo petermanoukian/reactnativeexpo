@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
-import Constants from "expo-constants";
+import { apiUrl, webUrl } from "@/src/config/env";
 import { useCallback, useEffect, useState } from "react";
+import { Alert } from 'react-native';
 
 export function useCategoryController() {
   const [cats, setCats] = useState<any[]>([]);
@@ -16,14 +17,13 @@ export function useCategoryController() {
   });
 
   const { token } = useAuth();
-  const WEB_URL = Constants.expoConfig?.extra?.LARAVEL_WEB_URL;
-  const LARAVEL_API_URL = Constants.expoConfig?.extra?.LARAVEL_API_URL;
+
 
   const loadPage = useCallback(async (pageNumber: number) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${LARAVEL_API_URL}/admin/cats/view?page=${pageNumber}&sort=${sortField}&direction=${sortDirection}&search=${encodeURIComponent(searchQuery)}&per_page=${perPage}`,
+        `${apiUrl}/admin/cats/view?page=${pageNumber}&sort=${sortField}&direction=${sortDirection}&search=${encodeURIComponent(searchQuery)}&per_page=${perPage}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,7 +48,9 @@ export function useCategoryController() {
     } finally {
       setLoading(false);
     }
-  }, [sortField, sortDirection, token, searchQuery, perPage, LARAVEL_API_URL]);
+  }, [sortField, sortDirection, token, searchQuery, perPage]);
+
+  // }, [sortField, sortDirection, token, searchQuery, perPage, apiUrl]);
 
   const handleSort = (field: string) => {
     if (field === sortField) {
@@ -60,6 +62,44 @@ export function useCategoryController() {
     setCats([]);
     setPage(1);
   };
+
+
+  const handleDelete = (id: number) => {
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this item?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await fetch(`${apiUrl}/admin/cat/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+
+              if (response.ok) {
+                console.log('✅ Deleted successfully');
+                resetView();
+              } else {
+                console.error('❌ Delete failed:', await response.text());
+              }
+            } catch (error) {
+              console.error('🔥 Error deleting:', error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+
 
   const resetView = () => {
     setSearchQuery("");
@@ -98,12 +138,13 @@ export function useCategoryController() {
     perPage,
     pagination,
     searchQuery,
-    WEB_URL,
+     webUrl,
     chunkedPages,
     setSearchQuery,
     setPerPage,
     loadPage,
     handleSort,
     resetView,
+    handleDelete
   };
 }

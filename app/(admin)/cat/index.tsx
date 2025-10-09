@@ -17,13 +17,14 @@ const {
   perPage,
   pagination,
   searchQuery,
-  WEB_URL,
+   webUrl,
   chunkedPages,
   setSearchQuery,
   setPerPage,
   loadPage,
   handleSort,
   resetView,
+  handleDelete
 } = useCategoryController();
 
   return (
@@ -67,7 +68,7 @@ const {
           data={cats}
           keyExtractor={(item) => `${item.idx}`}
           renderItem={({ item }) => (
-            <CategoryRow item={item} webUrl={WEB_URL} />
+            <CategoryRow item={item} webUrl={webUrl}  handleDelete={handleDelete}/>
           )}
         />
 

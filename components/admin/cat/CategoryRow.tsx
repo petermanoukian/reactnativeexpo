@@ -10,9 +10,10 @@ type Props = {
     filer?: string;
   };
   webUrl: string;
+  handleDelete: (id: number) => void;
 };
 
-export default function CategoryRow({ item, webUrl }: Props) {
+export default function CategoryRow({ item, webUrl , handleDelete}: Props) {
   return (
     <View className="flex-row items-center bg-white rounded-md px-4 py-3 mb-2 border border-gray-300">
       <View className="w-[40px] items-center">
@@ -42,9 +43,12 @@ export default function CategoryRow({ item, webUrl }: Props) {
           <Link href={`/(admin)/cat/edit/${item.idx}`} className="bg-yellow-500 px-4 py-2 rounded-md flex-1 mr-2">
             <Text className="text-white text-sm text-center">✏️</Text>
           </Link>
-          <Link href={`/admin/cat/delete/${item.idx}`} className="bg-red-600 px-4 py-2 rounded-md flex-1">
-            <Text className="text-white text-sm text-center">🗑️</Text>
-          </Link>
+          <Pressable
+            onPress={() => handleDelete(item.idx)}
+            style={{ backgroundColor: '#dc2626', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 6, flex: 1 }}
+          >
+            <Text style={{ color: 'white', fontSize: 14, textAlign: 'center' }}>🗑️</Text>
+          </Pressable>
         </View>
 
         {/* Subcategory Actions */}

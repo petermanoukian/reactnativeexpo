@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import Constants from "expo-constants";
+import { apiUrl } from "@/src/config/env";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -41,7 +41,7 @@ export function useAddCategoryController() {
       setNameStatus("checking");
       setNameError(null);
       try {
-        const response = await fetch(`${Constants.expoConfig?.extra?.LARAVEL_API_URL}/admin/cat/check`, {
+        const response = await fetch(`${apiUrl}/admin/cat/check`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -165,7 +165,7 @@ export function useAddCategoryController() {
     }
 
     try {
-      const response = await fetch(`${Constants.expoConfig?.extra?.LARAVEL_API_URL}/admin/cat/add`, {
+      const response = await fetch(`${apiUrl}/admin/cat/add`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
