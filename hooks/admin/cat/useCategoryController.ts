@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { apiUrl, webUrl } from "@/src/config/env";
 import { useCallback, useEffect, useState } from "react";
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 export function useCategoryController() {
   const [cats, setCats] = useState<any[]>([]);
@@ -64,40 +64,44 @@ export function useCategoryController() {
   };
 
 
-  const handleDelete = (id: number) => {
-    Alert.alert(
-      'Confirm Delete',
-      'Are you sure you want to delete this item?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const response = await fetch(`${apiUrl}/admin/cat/delete/${id}`, {
-                method: 'DELETE',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Accept: 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-              });
-
-              if (response.ok) {
-                console.log('✅ Deleted successfully');
-                resetView();
-              } else {
-                console.error('❌ Delete failed:', await response.text());
-              }
-            } catch (error) {
-              console.error('🔥 Error deleting:', error);
-            }
+  const handleDelete = async (id: number) => {
+    const confirmDelete = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/admin/cat/delete/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        },
-      ]
-    );
+        });
+
+        if (response.ok) {
+          console.log('✅ Deleted successfully');
+          resetView(); // 🔁 Reload after delete
+        } else {
+          console.error('❌ Delete failed:', await response.text());
+        }
+      } catch (error) {
+        console.error('🔥 Error deleting:', error);
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Are you sure you want to delete this item?');
+      if (confirmed) await confirmDelete();
+    } else {
+      Alert.alert(
+        'Confirm Delete',
+        'Are you sure you want to delete this item?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Delete', style: 'destructive', onPress: confirmDelete },
+        ]
+      );
+    }
   };
+
 
 
 

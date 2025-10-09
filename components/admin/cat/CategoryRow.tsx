@@ -25,15 +25,18 @@ export default function CategoryRow({ item, webUrl , handleDelete}: Props) {
       <View className="w-[70px]">
         <View className="flex-row items-center space-x-2 mb-1">
           {item.img2 && (
-            <Image
-              source={{ uri: `${webUrl}${item.img2}` }}
-              style={{ width: 55, height: 40, borderRadius: 4 }}
-            />
+            <Pressable onPress={() => Linking.openURL(`${webUrl}${item.img}`)}>
+              <Image
+                source={{ uri: `${webUrl}${item.img2}` }}
+                style={{ width: 62, height: 48, borderRadius: 4 }}
+              />
+            </Pressable>
           )}
+
         </View>
         {item.filer && (
           <Pressable onPress={() => Linking.openURL(`${webUrl}${item.filer}`)}>
-            <Text style={{ fontSize: 21 }} className="text-blue-600 underline">🗂️</Text>
+            <Text style={{ fontSize: 40 }} className="text-blue-600 underline">🗂️</Text>
           </Pressable>
         )}
       </View>

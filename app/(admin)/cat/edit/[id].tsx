@@ -17,7 +17,8 @@ export default function EditCategory() {
     pickImage,
     pickFile,
     handleSubmit,
-    existingImagePath,
+    existingThumbImagePath,
+    existingLargeImagePath,
     existingFileName,
     webUrl,
   } = useEditCategoryController();
@@ -58,12 +59,15 @@ export default function EditCategory() {
         </Text>
       </Pressable>
 
-      {existingImagePath && !image && (
-        <Image
-          source={{ uri: `${webUrl}${existingImagePath}` }}
-          style={{ width: 100, height: 70, borderRadius: 6, marginBottom: 8 }}
-        />
+      {existingThumbImagePath && !image && (
+        <Pressable onPress={() => Linking.openURL(`${webUrl}${existingLargeImagePath}`)}>
+          <Image
+            source={{ uri: `${webUrl}${existingThumbImagePath}` }}
+            style={{ width: 150, height: 100, borderRadius: 6, marginBottom: 8 }}
+          />
+        </Pressable>
       )}
+
 
       <Pressable onPress={pickFile} className="bg-green-500 px-4 py-2 rounded-md mb-4">
         <Text className="text-white text-center font-medium">
@@ -73,7 +77,7 @@ export default function EditCategory() {
 
       {existingFileName && !file && (
         <Pressable onPress={() => Linking.openURL(`${webUrl}${existingFileName}`)}>
-          <Text className="text-blue-600 underline text-center mb-4 text-base">🗂️ View Existing File</Text>
+           <Text style={{ fontSize: 40 }} className="text-blue-600 underline text-center mb-5">🗂️</Text>
         </Pressable>
       )}
 

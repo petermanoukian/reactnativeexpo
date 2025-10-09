@@ -18,7 +18,8 @@ export function useEditCategoryController() {
   const [nameError, setNameError] = useState<string | null>(null);
   const [nameTouched, setNameTouched] = useState(false);
   const isNameValid = name.trim().length >= 2 && nameStatus !== "exists";
-  const [existingImagePath, setExistingImagePath] = useState<string | null>(null);
+  const [existingLargeImagePath, setExistingLargeImagePath] = useState<string | null>(null);
+  const [existingThumbImagePath, setExistingThumbImagePath] = useState<string | null>(null);
   const [existingFileName, setExistingFileName] = useState<string | null>(null);
 
 
@@ -49,7 +50,8 @@ export function useEditCategoryController() {
         const data = text ? JSON.parse(text) : null;
 
         if (data?.name) setName(data.name);
-        if (data?.img2) setExistingImagePath(data.img2);
+        if (data?.img) setExistingLargeImagePath(data.img);
+        if (data?.img2) setExistingThumbImagePath(data.img2);
         if (data?.filer) setExistingFileName(data.filer);
 
       } catch (error) {
@@ -246,7 +248,8 @@ export function useEditCategoryController() {
     pickImage,
     pickFile,
     handleSubmit,
-    existingImagePath,
+    existingLargeImagePath,
+    existingThumbImagePath,
     existingFileName,
     webUrl,
   };
