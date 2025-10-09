@@ -1,35 +1,28 @@
-import { useAddCategoryController } from "@/hooks/admin/cat/useAddCategoryController";
+import { useEditCategoryController } from "@/hooks/admin/cat/useEditCategoryController";
 import { Link } from "expo-router";
 import { Eye } from "lucide-react-native";
 import { Pressable, Text, TextInput, View } from "react-native";
 
-
-
-export default function AddCategory() {
-
-
-const {
-  name,
-  setName,
-  nameTouched,
-  setNameTouched,
-  nameError,
-  isNameValid,
-  image,
-  file,
-  loading,
-  pickImage,
-  pickFile,
-  handleSubmit,
-} = useAddCategoryController();
-
+export default function EditCategory() {
+  const {
+    name,
+    setName,
+    nameTouched,
+    setNameTouched,
+    nameError,
+    isNameValid,
+    image,
+    file,
+    loading,
+    pickImage,
+    pickFile,
+    handleSubmit,
+  } = useEditCategoryController();
 
   return (
-
-
     <View className="flex-1 bg-yellow-50 px-4 py-6">
       <Text className="text-xl font-bold text-gray-800 mb-4 text-center">
-        ➕ Category
+        ✏️ Edit Category
       </Text>
 
       <Link
@@ -40,7 +33,6 @@ const {
         <Text className="text-white font-medium">Categories</Text>
       </Link>
 
-
       <TextInput
         placeholder="Category Name"
         value={name}
@@ -48,17 +40,12 @@ const {
           setNameTouched(true);
           setName(text);
         }}
-
         className="border border-gray-400 rounded-md px-3 py-2 mt-4 mb-4 bg-white"
       />
-
 
       {nameTouched && nameError && (
         <Text className="text-red-600 mb-2">{nameError}</Text>
       )}
-
-
-
 
       <Pressable onPress={pickImage} className="bg-blue-500 px-4 py-2 rounded-md mb-3">
         <Text className="text-white text-center font-medium">
@@ -78,11 +65,9 @@ const {
         className={`px-4 py-2 rounded-md ${loading || !isNameValid ? "bg-gray-400" : "bg-black"}`}
       >
         <Text className="text-white text-center font-medium">
-          {loading ? "Submitting..." : "🚀 Submit"}
+          {loading ? "Updating..." : "🚀 Update"}
         </Text>
       </Pressable>
-
-
     </View>
   );
 }
