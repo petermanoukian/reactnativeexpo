@@ -45,9 +45,12 @@ export default function AdminLayout() {
             <Text className="text-blue-600 font-medium">Categories</Text>
           </Pressable>
           <Text className="text-blue-600 font-medium">|</Text>
-          <Pressable onPress={() => router.replace("/(admin)/subcat")}>
+          <Pressable onPress={() => router.replace("/(admin)/subcat/view")}>
             <Text className="text-blue-600 font-medium">SubCategories</Text>
           </Pressable>
+
+
+
         </View>
       </View>
 

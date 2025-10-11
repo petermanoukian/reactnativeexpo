@@ -1,49 +1,38 @@
 import { Link } from "expo-router";
 import React from "react";
-import { Image, Linking, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 type Props = {
   item: {
     idx: number;
     name: string;
-    img2?: string;
-    filer?: string;
+    cat: {
+      name: string;
+      id:number;
+    };
   };
-  webUrl: string;
   handleDelete: (id: number) => void;
 };
 
-export default function CategoryRow({ item, webUrl , handleDelete}: Props) {
+export default function SubcategoryRow({ item, handleDelete }: Props) {
   return (
     <View className="flex-row items-center bg-white rounded-md px-4 py-3 mb-2 border border-gray-300">
       <View className="w-[40px] items-center">
         <Text className="font-bold text-gray-800 text-xs">{item.idx}</Text>
       </View>
+
       <View className="flex-1 pr-2 w-[130px]">
         <Text className="text-gray-700 font-medium text-sm">{item.name}</Text>
       </View>
-      <View className="w-[70px]">
-        <View className="flex-row items-center space-x-2 mb-1">
-          {item.img2 && (
-            <Pressable onPress={() => Linking.openURL(`${webUrl}${item.img}`)}>
-              <Image
-                source={{ uri: `${webUrl}${item.img2}` }}
-                style={{ width: 62, height: 48, borderRadius: 4 }}
-              />
-            </Pressable>
-          )}
 
-        </View>
-        {item.filer && (
-          <Pressable onPress={() => Linking.openURL(`${webUrl}${item.filer}`)}>
-            <Text style={{ fontSize: 40 }} className="text-blue-600 underline">🗂️</Text>
-          </Pressable>
-        )}
+      <View className="w-[120px] items-center">
+        <Text className="text-gray-600 text-sm font-medium">{item.cat.name}</Text>
       </View>
+
       <View className="w-[140px] flex-col space-y-2">
         {/* Category Actions */}
         <View className="flex-row">
-          <Link href={`/(admin)/cat/edit/${item.idx}`} className="bg-yellow-500 px-4 py-2 rounded-md flex-1 mr-2">
+          <Link href={`/(admin)/subcat/edit/${item.idx}`} className="bg-yellow-500 px-4 py-2 rounded-md flex-1 mr-2">
             <Text className="text-white text-sm text-center">✏️</Text>
           </Link>
           <Pressable
@@ -56,12 +45,10 @@ export default function CategoryRow({ item, webUrl , handleDelete}: Props) {
 
         {/* Subcategory Actions */}
         <View className="flex-row mt-3">
-          <Link href={`/subcat/add/${item.idx}`} className="bg-green-700 px-4 py-2 rounded-md flex-1 mr-2">
-            <Text className="text-white text-sm text-center">➕</Text>
+          <Link href={`/subcat/add/${item.cat.id}`} className="bg-green-700 px-4 py-2 rounded-md flex-1 mr-2">
+            <Text className="text-white text-sm text-center">➕ </Text>
           </Link>
-          <Link href={`/(admin)/subcat/view/${item.idx}`} className="bg-green-500 px-4 py-2 rounded-md flex-1">
-            <Text className="text-white text-sm text-center">👁️</Text>
-          </Link>
+
         </View>
 
         {/* Product Actions */}
