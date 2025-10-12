@@ -96,7 +96,8 @@ const checkExists = useCallback(async () => {
 
 useEffect(() => {
   checkExists();
-}, [name, catid]);
+}, [name, catid, checkExists]);
+
 
 
 

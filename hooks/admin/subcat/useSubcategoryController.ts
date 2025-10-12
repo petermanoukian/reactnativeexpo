@@ -110,6 +110,7 @@ export function useSubcategoryController(initialCatid?: number | null) {
     }
   };
 
+  /*
   const resetView = () => {
     setSearchQuery("");
     setSortField("id");
@@ -117,6 +118,17 @@ export function useSubcategoryController(initialCatid?: number | null) {
     //setFilterCatid(initialCatid ?? null);
     setFilterCatid(null);
   };
+  */
+
+  const resetView = () => {
+  setSearchQuery("");
+  setSortField("id");
+  setSortDirection("desc");
+  setFilterCatid(null);
+  setPage(1); // 🔥 This forces reload
+  setHasMore(true);
+  setSubcats([]); // Optional: clear immediately
+};
 
   const loadMore = () => {
     if (hasMore && !loading) setPage((prev) => prev + 1);
