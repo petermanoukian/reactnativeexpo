@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 
 type Props = {
   item: {
@@ -53,13 +53,31 @@ export default function ProdRow({ item, handleDelete }: Props) {
       </Link>
 
       <Pressable
-        onPress={() => handleDelete(item.id)}
-        style={{ backgroundColor: '#dc2626', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 6 ,
-          marginRight:4
+        onPress={() => {
+          Alert.alert(
+            "Confirm Delete",
+            `Are you sure you want to delete "${item.name}"?`,
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Delete",
+                style: "destructive",
+                onPress: () => handleDelete(item.id),
+              },
+            ]
+          );
+        }}
+        style={{
+          backgroundColor: '#dc2626',
+          paddingVertical: 8,
+          paddingHorizontal: 12,
+          borderRadius: 6,
+          marginRight: 4,
         }}
       >
         <Text style={{ color: 'white', fontSize: 14, textAlign: 'center' }}>🗑️</Text>
       </Pressable>
+
 
       <Link
         href={{

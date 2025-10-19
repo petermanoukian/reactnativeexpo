@@ -1,12 +1,10 @@
 import { useAuth } from "@/context/AuthContext";
 import { laraapi } from "@/src/libs/axios";
 import { useCallback, useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 export function useProdController(initialCatid?: number | null, initialSubcatid?: number | null) {
   const { token } = useAuth();
-
-
-
 
   const [cats, setCats] = useState<{ id: number; name: string }[]>([]);
   const [subcats, setSubcats] = useState<{ id: number; name: string }[]>([]);
@@ -189,7 +187,16 @@ export function useProdController(initialCatid?: number | null, initialSubcatid?
         await laraapi.delete(`/admin/prod/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        fetchProducts();
+        fetchProducts({
+          mode: "reset",
+          page: 1,
+          search,
+          catid,
+          subcatid,
+          sortField,
+          sortDirection,
+        });
+
       } catch (err) {
         console.error("Delete failed:", err);
         Alert.alert("❌ Delete Error", "Failed to delete product");
