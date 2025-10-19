@@ -37,7 +37,7 @@ export default function Login() {
       {/* Header */}
       <View className="mb-8 items-center">
         <Text className="text-2xl font-bold text-gray-800 text-center">
-          Sign In  {apiUrl}
+          Sign In  
         </Text>
 
       </View>
@@ -59,25 +59,27 @@ export default function Login() {
 
         {/* Password */}
 
-        <View className="relative">
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="••••••••"
-            className="bg-white border border-gray-300 rounded-md px-4 py-2 text-gray-800 pr-10"
-            secureTextEntry={!showPassword}
-          />
-          <Pressable
-            className="absolute right-3 top-2"
-            onPress={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <EyeOff size={22} color="#4b5563" />
-            ) : (
-              <Eye size={22} color="#4b5563" />
-            )}
-          </Pressable>
-        </View>
+          <View className="relative h-[52px]">
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder="••••••••"
+              className="bg-white border border-gray-300 rounded-md px-4 py-3 text-gray-800 pr-12 text-base"
+              secureTextEntry={!showPassword}
+            />
+            <Pressable
+              className="absolute right-3 top-1.5 w-10 h-10 justify-center items-center"
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff size={24} color="#4b5563" />
+              ) : (
+                <Eye size={24} color="#4b5563" />
+              )}
+            </Pressable>
+          </View>
+
+
 
         <Pressable
           className="bg-blue-600 py-3 rounded-md items-center mt-10"

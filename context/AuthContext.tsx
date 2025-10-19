@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { createContext, useContext, useEffect, useState } from "react";
+import { Platform } from "react-native";
 
 type User = {
   id: number;
@@ -21,7 +22,7 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
+const deviceType = Platform.OS === "ios" || Platform.OS === "android" ? "mobile" : "web";
 export const useAuthGuard = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -111,6 +112,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  /*
   const handleLogin = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await fetch(
@@ -143,6 +145,45 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false;
     }
   };
+
+  */
+
+  const handleLogin = async (email: string, password: string): Promise<boolean> => {
+  const deviceType = Platform.OS === "ios" || Platform.OS === "android" ? "mobile" : "web";
+
+  try {
+    const response = await fetch(
+      `${Constants.expoConfig?.extra?.LARAVEL_API_URL}/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Device-Type": deviceType, // 🔥 key line
+        },
+        body: JSON.stringify({ email, password }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok && data.user && data.token) {
+      login(data.user, data.token);
+      setMessage("✅ Login successful");
+      setMessageType("success");
+      return true;
+    } else {
+      setMessage(data.message || "❌ Login failed. Invalid credentials.");
+      setMessageType("error");
+      return false;
+    }
+  } catch (error: any) {
+    setMessage(error.message || "🚨 Network error. Unable to connect.");
+    setMessageType("error");
+    return false;
+  }
+};
+
 
   return (
     <AuthContext.Provider

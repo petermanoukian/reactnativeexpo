@@ -6,6 +6,7 @@ type Props = {
   item: {
     idx: number;
     name: string;
+    catid:number;
     cat: {
       name: string;
       id:number;
@@ -45,21 +46,42 @@ export default function SubcategoryRow({ item, handleDelete }: Props) {
 
         {/* Subcategory Actions */}
         <View className="flex-row mt-3">
-          <Link href={`/subcat/add/${item.cat.id}`} className="bg-green-700 px-4 py-2 rounded-md flex-1 mr-2">
+          <Link href={`/subcat/add/${item.catid}`} className="bg-green-700 px-4 py-2 rounded-md flex-1 mr-2">
             <Text className="text-white text-sm text-center">➕ </Text>
           </Link>
 
         </View>
 
-        {/* Product Actions */}
-        <View className="flex-row mt-3">
-          <Link href={`/(admin)/product/add/${item.idx}`} className="bg-purple-700 px-4 py-2 rounded-md flex-1 mr-2">
-            <Text className="text-white text-sm text-center">➕</Text>
-          </Link>
-          <Link href={`/(admin)/product/view/${item.idx}`} className="bg-purple-500 px-4 py-2 rounded-md flex-1">
-            <Text className="text-white text-sm text-center">👁️</Text>
-          </Link>
-        </View>
+        {/* Product Actions from subcategories*/}
+          <View className="flex-row mt-3">
+            <Link
+              href={{
+                pathname: "/(admin)/prod/add",
+                params: {
+                  categoryId: item.catid,
+                  subcategoryId: item.idx,
+                },
+              }}
+              className="bg-purple-700 px-4 py-2 rounded-md flex-1 mr-2"
+            >
+              <Text className="text-white text-sm text-center">➕</Text>
+            </Link>
+
+            <Link
+              href={{
+                pathname: "/(admin)/prod/view",
+                params: {
+                  categoryId: item.catid,
+                  subcategoryId: item.idx,
+                },
+              }}
+              className="bg-purple-500 px-4 py-2 rounded-md flex-1"
+            >
+              <Text className="text-white text-sm text-center">👁️</Text>
+            </Link>
+          </View>
+
+
       </View>
     </View>
   );

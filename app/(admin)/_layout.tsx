@@ -1,6 +1,7 @@
 import { Stack, useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth, useAuthGuard } from "../../context/AuthContext";
+
 
 const Banner = () => (
   <View className="w-full h-[40px] items-center justify-center overflow-hidden mt-10 mb-4" style={styles.banner}>
@@ -16,7 +17,8 @@ export default function AdminLayout() {
   const { user, loading } = useAuthGuard();
   const { logout } = useAuth();
   const router = useRouter();
-
+  const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+  const headerHeight = isMobile ? 190 : 130;
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -30,8 +32,8 @@ export default function AdminLayout() {
   return (
     <View className="flex-1">
       {/* Scrollable header zone */}
-      <View style={{ height: 190, paddingHorizontal: 16, paddingTop: 4 }}>
-        <Banner />
+      <View style={{ height: headerHeight, paddingHorizontal: 16, paddingTop: 4 }}>
+        {isMobile && <Banner />}
 
         <Pressable
           className="bg-red-600 px-4 py-2 rounded-md items-center justify-center w-[100] self-center"
@@ -48,6 +50,19 @@ export default function AdminLayout() {
           <Pressable onPress={() => router.replace("/(admin)/subcat/view")}>
             <Text className="text-blue-600 font-medium">SubCategories</Text>
           </Pressable>
+
+
+
+          {/* View Product - No Params */}
+          <Pressable onPress={() => router.navigate({ pathname: "/(admin)/prod/view" })}>
+            <Text className="text-blue-700 font-medium"> | Products </Text>
+          </Pressable>
+
+
+        <Pressable onPress={() => router.navigate({ pathname: "/(admin)/prod/add" })}>
+          <Text className="text-green-700 font-medium"> | Add Product </Text>
+        </Pressable>
+
 
 
 

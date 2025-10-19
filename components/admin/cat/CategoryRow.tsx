@@ -64,15 +64,29 @@ export default function CategoryRow({ item, webUrl , handleDelete}: Props) {
           </Link>
         </View>
 
-        {/* Product Actions */}
+        {/* Product Actions for categories*/}
         <View className="flex-row mt-3">
-          <Link href={`/(admin)/product/add/${item.idx}`} className="bg-purple-700 px-4 py-2 rounded-md flex-1 mr-2">
+          <Link
+            href={{
+              pathname: "/(admin)/prod/add",
+              params: { categoryId: item.idx },
+            }}
+            className="bg-purple-700 px-4 py-2 rounded-md flex-1 mr-2"
+          >
             <Text className="text-white text-sm text-center">➕</Text>
           </Link>
-          <Link href={`/(admin)/product/view/${item.idx}`} className="bg-purple-500 px-4 py-2 rounded-md flex-1">
+
+          <Link
+            href={{
+              pathname: "/(admin)/prod/view",
+              params: { categoryId: item.idx },
+            }}
+            className="bg-purple-500 px-4 py-2 rounded-md flex-1"
+          >
             <Text className="text-white text-sm text-center">👁️</Text>
           </Link>
         </View>
+
       </View>
     </View>
   );
